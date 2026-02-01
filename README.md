@@ -52,6 +52,16 @@ curl -s "http://127.0.0.1:8000/api/v1/practice/next?module_id=precision.generali
 ## CORS
 - 为前端联调临时全放开跨域（allow_origins=["*"] 等）。
 
+## Auth (X-API-Key)
+- 开启方式：
+  ```bash
+  LINGUO_REQUIRE_API_KEY=1 LINGUO_API_KEY=your-key
+  ```
+- 请求示例（curl）：
+  ```bash
+  curl -H "X-API-Key: your-key" http://127.0.0.1:8000/api/v1/system/health
+  ```
+
 ## Orchestrator Skeleton
 - 提供教学调度中枢与 Agent 接口占位。
 - 仅包含可扩展的空壳实现，不包含任何教学规则或业务逻辑。
