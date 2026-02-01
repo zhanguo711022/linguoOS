@@ -49,3 +49,30 @@ curl -X POST "http://localhost:8000/api/v1/profile/update" \
 ```json
 {"ok": true}
 ```
+
+## Workspace Context API
+
+### GET /api/v1/workspace/context
+请求：
+```bash
+curl "http://localhost:8000/api/v1/workspace/context"
+```
+
+响应：
+```json
+{
+  "current_module": {
+    "id": "precision.generalization",
+    "name": "Generalization"
+  },
+  "ability_snapshot": {
+    "stage": 2,
+    "core_issue": "precision",
+    "dimensions": {
+      "precision": {"level": 54, "trend": "up"},
+      "structure": {"level": 68, "trend": "steady"}
+    }
+  },
+  "allowed_actions": ["submit_task", "continue_practice"]
+}
+```
