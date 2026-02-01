@@ -31,6 +31,20 @@ uvicorn linguoos.main:app --reload
 ]
 ```
 
+## Explain API
+
+### GET /api/v1/explain/concept
+响应（示例）：
+```json
+{
+  "title": "Generalization",
+  "one_liner": "SAT favors specific, verifiable claims over broad generalizations.",
+  "structure_template": ["Scope", "Object", "Measurable evidence"],
+  "example": "In Grade 10, average scores rose 12% after a 4-week program.",
+  "return_to": "practice"
+}
+```
+
 ## Profile API
 
 ### GET /api/v1/profile/current
