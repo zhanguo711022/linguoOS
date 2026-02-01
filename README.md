@@ -94,3 +94,12 @@ curl "http://localhost:8000/api/v1/workspace/context"
   "allowed_actions": ["submit_task", "continue_practice"]
 }
 ```
+
+## Practice API
+
+### GET /api/v1/practice/next?module_id=precision.generalization
+
+### POST /api/v1/practice/submit
+请求体：TaskSubmissionRequest
+
+响应体：FeedbackResponse
