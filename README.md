@@ -117,3 +117,28 @@ curl "http://localhost:8000/api/v1/workspace/context"
 请求体：TaskSubmissionRequest
 
 响应体：FeedbackResponse
+
+## Correction API
+
+### POST /api/v1/correction/review
+请求：
+```bash
+curl -X POST "http://localhost:8000/api/v1/correction/review" \
+  -H "Content-Type: application/json" \
+  -d '{"text":"The program improved scores for everyone.","module_id":"precision.generalization"}'
+```
+
+响应（示例）：
+```json
+{
+  "mode": "feedback",
+  "core_issue": "precision",
+  "blocks": [
+    {"type": "error_type", "content": "generalization"},
+    {"type": "why", "content": "The claim is broad and not verifiable."},
+    {"type": "example", "content": "Average scores increased by 12% after 4 weeks."},
+    {"type": "how_to_avoid", "content": "Constrain scope and use measurable evidence."}
+  ],
+  "next_action": "continue_practice"
+}
+```
