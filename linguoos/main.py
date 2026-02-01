@@ -1,5 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 
 from linguoos.api.v1.growth import router as growth_router
 from linguoos.api.v1.decision import router as decision_router
@@ -22,6 +24,13 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.mount("/webui", StaticFiles(directory="linguoos/webui"), name="webui")
+
+
+@app.get("/ui")
+def ui_index():
+    return FileResponse("linguoos/webui/index.html")
 
 app.include_router(task_router)
 app.include_router(state_router)
