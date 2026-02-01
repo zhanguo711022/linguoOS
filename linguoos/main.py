@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
@@ -25,12 +27,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.mount("/webui", StaticFiles(directory="linguoos/webui"), name="webui")
+UI_DIR = Path(__file__).parent / "webui"
+
+app.mount("/webui", StaticFiles(directory=str(UI_DIR)), name="webui")
 
 
 @app.get("/ui")
 def ui_index():
-    return FileResponse("linguoos/webui/index.html")
+    return FileResponse(str(UI_DIR / "index.html"))
 
 app.include_router(task_router)
 app.include_router(state_router)

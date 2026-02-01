@@ -41,6 +41,7 @@ curl -s "http://127.0.0.1:8000/api/v1/practice/next?module_id=precision.generali
 ```
 
 ## Workspace · Minimal Web UI
+- 打开 http://127.0.0.1:8000/ui 体验最小工作台
 - 打开： http://127.0.0.1:8000/ui
 - 按按钮顺序 A → B → C1 → C2 → D → E 即可看到闭环（或用 “Alt. Demo Flow” 一键查看）
 
