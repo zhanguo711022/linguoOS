@@ -45,6 +45,28 @@ uvicorn linguoos.main:app --reload
 }
 ```
 
+## Decision API
+
+### POST /api/v1/decision/next
+请求：
+```json
+{
+  "user_id": "u1",
+  "module_id": "precision.generalization",
+  "last_mode": "practice",
+  "last_correct": false
+}
+```
+
+响应：
+```json
+{
+  "action": "explain",
+  "target_module": "precision.generalization",
+  "reason": "placeholder"
+}
+```
+
 ## Profile API
 
 ### GET /api/v1/profile/current
