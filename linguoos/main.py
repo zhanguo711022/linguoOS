@@ -4,7 +4,10 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.responses import JSONResponse
 
+from linguoos import config
 from linguoos.api.v1.growth import router as growth_router
 from linguoos.api.v1.decision import router as decision_router
 from linguoos.api.v1.demo import router as demo_router
@@ -26,6 +29,31 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+EXEMPT_PATH_PREFIXES = [
+    "/docs",
+    "/openapi.json",
+    "/ui",
+    "/webui",
+    "/api/v1/system/",
+]
+
+
+class ApiKeyMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request, call_next):
+        if not config.REQUIRE_API_KEY:
+            return await call_next(request)
+        path = request.url.path
+        if any(path.startswith(prefix) for prefix in EXEMPT_PATH_PREFIXES):
+            return await call_next(request)
+        if path.startswith("/api/v1/"):
+            key = request.headers.get("X-API-Key")
+            if key != config.API_KEY:
+                return JSONResponse({"detail": "Unauthorized"}, status_code=401)
+        return await call_next(request)
+
+
+app.add_middleware(ApiKeyMiddleware)
 
 UI_DIR = Path(__file__).parent / "webui"
 
