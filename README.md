@@ -49,6 +49,29 @@ curl -s "http://127.0.0.1:8000/api/v1/practice/next?module_id=precision.generali
 - 健康检查：GET /api/v1/system/health
 - 版本号：GET /api/v1/system/version
 
+## v0.2 · Observability pack
+- 结构化日志（JSON 行）默认开启：
+  ```json
+  {"event":"request_start","method":"GET","path":"/api/v1/system/status","rid":"..."}
+  {"event":"request_end","method":"GET","path":"/api/v1/system/status","rid":"...","status":200,"dur_ms":2}
+  ```
+- 统一错误返回示例：
+  ```json
+  {"ok":false,"error":{"type":"http_error","status":404,"message":"Not Found"}}
+  ```
+- System 状态与指标：
+  ```bash
+  curl -s http://127.0.0.1:8000/api/v1/system/status
+  curl -s http://127.0.0.1:8000/api/v1/system/metrics
+  ```
+- Web UI：打开 http://127.0.0.1:8000/ui 后点击 “System Status / System Metrics”。
+
+### v0.2 自测方法
+```bash
+curl -s http://127.0.0.1:8000/api/v1/system/status
+curl -s http://127.0.0.1:8000/api/v1/system/metrics
+```
+
 ## CORS
 - 为前端联调临时全放开跨域（allow_origins=["*"] 等）。
 

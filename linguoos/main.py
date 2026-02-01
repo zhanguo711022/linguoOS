@@ -2,6 +2,7 @@ from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -20,6 +21,9 @@ from linguoos.api.v1.state import router as state_router
 from linguoos.api.v1.system import router as system_router
 from linguoos.api.v1.task import router as task_router
 from linguoos.api.v1.workspace import router as workspace_router
+from linguoos.middleware.errors import install_error_handlers
+from linguoos.middleware.logging import JsonRequestLogMiddleware
+from linguoos.system.metrics import MetricsMiddleware
 
 app = FastAPI(title="LinguoOS External Interface Layer", version="0.1.0")
 app.add_middleware(
@@ -54,6 +58,10 @@ class ApiKeyMiddleware(BaseHTTPMiddleware):
 
 
 app.add_middleware(ApiKeyMiddleware)
+app.add_middleware(JsonRequestLogMiddleware)
+app.add_middleware(MetricsMiddleware)
+app.add_middleware(GZipMiddleware, minimum_size=500)
+install_error_handlers(app)
 
 UI_DIR = Path(__file__).parent / "webui"
 
