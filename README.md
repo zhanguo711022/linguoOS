@@ -13,6 +13,24 @@ uvicorn linguoos.main:app --reload
 - 提供教学调度中枢与 Agent 接口占位。
 - 仅包含可扩展的空壳实现，不包含任何教学规则或业务逻辑。
 
+## Precision Spine
+- Precision 维度的内容骨架与模块注册表，仅提供静态数据与只读查询接口。
+
+### GET /api/v1/precision/modules
+响应（示例）：
+```json
+[
+  {
+    "module_id": "precision.generalization",
+    "name": "Generalization",
+    "description": "Over-broad claims without limits.",
+    "error_type": "generalization",
+    "prerequisites": [],
+    "mastery_condition": {}
+  }
+]
+```
+
 ## Profile API
 
 ### GET /api/v1/profile/current
