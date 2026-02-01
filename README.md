@@ -52,6 +52,17 @@ uvicorn linguoos.main:app --reload
 }
 ```
 
+## Demo Flow API
+
+### GET /api/v1/demo/flow
+示例：
+```
+GET /api/v1/demo/flow?module_id=precision.generalization&wrong_first=true
+```
+
+说明：
+- 返回 steps 数组，依次包含 decision_1、practice_next、practice_submit、decision_2（如需则有 explain_concept）。
+
 ## Decision API
 
 ### POST /api/v1/decision/next

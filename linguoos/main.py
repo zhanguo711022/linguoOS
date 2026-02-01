@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from linguoos.api.v1.growth import router as growth_router
 from linguoos.api.v1.decision import router as decision_router
+from linguoos.api.v1.demo import router as demo_router
 from linguoos.api.v1.explain import router as explain_router
 from linguoos.api.v1.practice import router as practice_router
 from linguoos.api.v1.correction import router as correction_router
@@ -25,6 +26,7 @@ app.add_middleware(
 app.include_router(task_router)
 app.include_router(state_router)
 app.include_router(growth_router)
+app.include_router(demo_router)
 app.include_router(explain_router)
 app.include_router(profile_router)
 app.include_router(workspace_router)
