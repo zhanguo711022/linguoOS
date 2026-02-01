@@ -9,6 +9,10 @@ uvicorn linguoos.main:app --reload
 - 当前仅提供 mock 接口层。
 - 不包含任何教学逻辑。
 
+## Orchestrator Skeleton
+- 提供教学调度中枢与 Agent 接口占位。
+- 仅包含可扩展的空壳实现，不包含任何教学规则或业务逻辑。
+
 ## Profile API
 
 ### GET /api/v1/profile/current
