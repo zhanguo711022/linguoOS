@@ -1,5 +1,3 @@
-from uuid import uuid4
-
 from fastapi import APIRouter
 
 from linguoos.schemas.feedback import FeedbackBlock, FeedbackResponse
@@ -11,13 +9,16 @@ router = APIRouter(prefix="/api/v1/task", tags=["task"])
 @router.post("/submit", response_model=FeedbackResponse)
 def submit_task(request: TaskSubmissionRequest) -> FeedbackResponse:
     return FeedbackResponse(
-        submission_id=str(uuid4()),
-        status="received",
-        feedback=[
+        mode="feedback",
+        core_issue="precision",
+        blocks=[
             FeedbackBlock(
-                block_id="mock-feedback-1",
-                message="Mock feedback placeholder.",
-                metadata={"user_id": request.user_id, "task_id": request.task_id},
+                type="info",
+                content=(
+                    "Mock feedback placeholder for task "
+                    f"{request.task_id} submitted by {request.user_id}."
+                ),
             )
         ],
+        next_action="continue_practice",
     )
