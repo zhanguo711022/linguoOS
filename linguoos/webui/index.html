@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LinguoOS · Workspace</title>
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;margin:24px;max-width:880px}
+    h1{margin:0 0 8px}
+    .row{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+    button{padding:8px 12px;border:1px solid #ddd;border-radius:8px;background:#fff;cursor:pointer}
+    button:active{transform:translateY(1px)}
+    pre{background:#0b1020;color:#c9e7ff;padding:12px;border-radius:8px;overflow:auto;max-height:50vh}
+    .note{color:#666;font-size:12px}
+  </style>
+</head>
+<body>
+  <h1>Workspace · Minimal Demo</h1>
+  <div class="note">一键演示：Context → Decision → Practice/Explain（全部使用占位数据，不含教学逻辑）</div>
+
+  <div class="row">
+    <button id="btnCtx">A. Context</button>
+    <button id="btnDecide1">B. Decision (first)</button>
+    <button id="btnGet">C1. Practice · Get</button>
+    <button id="btnSubmitWrong">C2. Submit · Wrong</button>
+    <button id="btnDecide2">D. Decision (after submit)</button>
+    <button id="btnExplain">E. Explain page</button>
+    <button id="btnDemoFlow">Alt. One-shot Demo Flow</button>
+  </div>
+
+  <pre id="out">Ready.</pre>
+  <script src="/webui/app.js"></script>
+</body>
+</html>
