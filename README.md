@@ -9,6 +9,37 @@ uvicorn linguoos.main:app --reload
 - 当前仅提供 mock 接口层。
 - 不包含任何教学逻辑。
 
+## Frontend Quickstart · 3 Calls
+访问 `/docs` 作为可视化调试入口，下面 3 次调用即可跑通 Context → Decision → Practice 的最小闭环。
+
+1) 入口与健康检查
+- Swagger: `GET /docs`
+- Health:
+  ```bash
+  curl -s http://127.0.0.1:8000/api/v1/system/health
+  # {"ok":true}
+  ```
+
+2) Context
+```bash
+curl -s http://127.0.0.1:8000/api/v1/workspace/context
+# {"current_module":{"id":"precision.generalization","name":"Generalization"}}
+```
+
+3) Decision
+```bash
+curl -s -X POST http://127.0.0.1:8000/api/v1/decision/next \
+  -H "Content-Type: application/json" \
+  -d '{"user_id":"demo-user","module_id":"precision.generalization","last_mode":"practice","last_correct":false}'
+# {"action":"explain","target_module":"precision.generalization"}
+```
+
+4) Practice
+```bash
+curl -s "http://127.0.0.1:8000/api/v1/practice/next?module_id=precision.generalization"
+# {"mode":"practice","module_id":"precision.generalization"}
+```
+
 ## System API
 - 健康检查：GET /api/v1/system/health
 - 版本号：GET /api/v1/system/version
