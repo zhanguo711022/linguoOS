@@ -110,6 +110,7 @@ curl -s http://127.0.0.1:8000/api/v1/system/metrics
 ## Explain API
 
 ### GET /api/v1/explain/concept
+/explain/concept 现由 ExplainAgent.explain(module_id) 提供占位讲解（外部契约不变）
 响应（示例）：
 ```json
 {
