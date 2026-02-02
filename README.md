@@ -221,6 +221,7 @@ curl "http://localhost:8000/api/v1/workspace/context"
 ## Practice API
 
 ### GET /api/v1/practice/next?module_id=precision.generalization
+/practice/next 现在通过 PracticeAgent.generate_item() 返回占位题目（外部契约不变）
 
 ### POST /api/v1/practice/submit
 请求体：TaskSubmissionRequest

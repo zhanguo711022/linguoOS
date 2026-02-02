@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Query
 
+from linguoos.agents.practice import PracticeAgent
 from linguoos.schemas.feedback import FeedbackBlock, FeedbackResponse
 from linguoos.schemas.practice import PracticeItem
 from linguoos.schemas.task import TaskSubmissionRequest
@@ -11,16 +12,7 @@ router = APIRouter(prefix="/api/v1/practice", tags=["practice"])
 def next_practice(
     module_id: str = Query("precision.generalization"),
 ) -> PracticeItem:
-    return PracticeItem(
-        task_id="demo-1",
-        module_id=module_id,
-        type="choice",
-        prompt="Which option is the most precise?",
-        options=[
-            "Students often learn much faster.",
-            "Average scores increased by 12% after 4 weeks.",
-        ],
-    )
+    return PracticeAgent().generate_item(module_id)
 
 
 @router.post("/submit", response_model=FeedbackResponse)
