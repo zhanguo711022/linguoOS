@@ -227,6 +227,8 @@ curl "http://localhost:8000/api/v1/workspace/context"
 
 响应体：FeedbackResponse
 
+/practice/submit 现由 FeedbackAgent.evaluate() 生成占位反馈（规则：是否包含数字）
+
 ## Correction API
 
 ### POST /api/v1/correction/review
