@@ -1,7 +1,7 @@
 import re
 
-from linguoos.schemas.feedback import FeedbackBlock, FeedbackResponse
 from linguoos.schemas.task import TaskSubmissionRequest
+from linguoos.schemas.feedback import FeedbackResponse, FeedbackBlock
 
 
 class FeedbackAgent:

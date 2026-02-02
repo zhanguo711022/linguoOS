@@ -111,6 +111,7 @@ curl -s http://127.0.0.1:8000/api/v1/system/metrics
 
 ### GET /api/v1/explain/concept
 /explain/concept 现由 ExplainAgent.explain(module_id) 提供占位讲解（外部契约不变）
+/explain/concept 通过 ExplainAgent.explain(module_id)
 响应（示例）：
 ```json
 {
@@ -223,6 +224,7 @@ curl "http://localhost:8000/api/v1/workspace/context"
 
 ### GET /api/v1/practice/next?module_id=precision.generalization
 /practice/next 现在通过 PracticeAgent.generate_item() 返回占位题目（外部契约不变）
+/practice/next 通过 PracticeAgent.generate_item()
 
 ### POST /api/v1/practice/submit
 请求体：TaskSubmissionRequest
@@ -230,6 +232,7 @@ curl "http://localhost:8000/api/v1/workspace/context"
 响应体：FeedbackResponse
 
 - "/practice/submit 现由 FeedbackAgent.evaluate() 生成占位反馈（规则：是否包含数字）"
+- /practice/submit 通过 FeedbackAgent.evaluate()（规则：是否包含数字）
 
 ## Correction API
 
