@@ -1,9 +1,10 @@
 import time
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Query
 from pydantic import BaseModel
 
 from linguoos import config
+from linguoos.system.events import EVENTS
 from linguoos.system.metrics import METRICS
 
 router = APIRouter(prefix="/api/v1/system", tags=["system"])
@@ -42,3 +43,11 @@ def status() -> dict:
 @router.get("/metrics")
 def metrics() -> dict:
     return METRICS.snapshot()
+
+
+@router.get("/events")
+def events(limit: int | None = Query(None, ge=1, le=500)) -> dict:
+    return {
+        "events": EVENTS.list(limit=limit),
+        "meta": EVENTS.snapshot(),
+    }
