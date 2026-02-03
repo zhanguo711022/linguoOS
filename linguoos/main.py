@@ -22,6 +22,7 @@ from linguoos.api.v1.system import router as system_router
 from linguoos.api.v1.task import router as task_router
 from linguoos.api.v1.workspace import router as workspace_router
 from linguoos.middleware.errors import install_error_handlers
+from linguoos.middleware.events import EventMiddleware
 from linguoos.middleware.logging import JsonRequestLogMiddleware
 from linguoos.system.metrics import MetricsMiddleware
 
@@ -59,6 +60,7 @@ class ApiKeyMiddleware(BaseHTTPMiddleware):
 
 app.add_middleware(ApiKeyMiddleware)
 app.add_middleware(JsonRequestLogMiddleware)
+app.add_middleware(EventMiddleware)
 app.add_middleware(MetricsMiddleware)
 app.add_middleware(GZipMiddleware, minimum_size=500)
 install_error_handlers(app)

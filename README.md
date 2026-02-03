@@ -72,6 +72,17 @@ curl -s http://127.0.0.1:8000/api/v1/system/status
 curl -s http://127.0.0.1:8000/api/v1/system/metrics
 ```
 
+## v0.3 · Providers + Events + Docker
+- Providers 协议占位：`linguoos/providers/base.py` 提供 LLMProvider 协议定义。
+- Events 留痕：
+  - `GET /api/v1/system/events?limit=50` 查看最近事件。
+  - 事件缓冲区大小：环境变量 `LINGUO_EVENT_BUFFER_SIZE`（默认 200）。
+- Docker 打包上线（本地镜像，不发外网请求）：
+  ```bash
+  docker build -t linguoos:local .
+  docker run --rm -p 8000:8000 linguoos:local
+  ```
+
 ## CORS
 - 为前端联调临时全放开跨域（allow_origins=["*"] 等）。
 
