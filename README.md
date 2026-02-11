@@ -269,3 +269,9 @@ curl -X POST "http://localhost:8000/api/v1/correction/review" \
   "next_action": "continue_practice"
 }
 ```
+
+## History API（SQLite）
+
+- GET `/api/v1/history/recent?user_id=&limit=`
+- DELETE `/api/v1/history/clear?user_id=`
+- 数据文件：`LINGUO_DB_PATH`（默认 `linguoos/data/linguoos.db`）
