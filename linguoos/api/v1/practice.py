@@ -20,8 +20,15 @@ def next_practice(
 @router.post("/submit", response_model=FeedbackResponse)
 def submit(req: TaskSubmissionRequest) -> FeedbackResponse:
     result = FeedbackAgent().evaluate(req)
+
     text = (req.payload or {}).get("content", "")
     module_id = (req.payload or {}).get("module_id") or "precision.generalization"
-    correct = False
+
+    # Best-effort correctness signal for history.
+    # Keep it aligned with FeedbackAgent's current heuristic.
+    import re
+
+    correct = bool(re.search(r"\d", text or ""))
+
     save_attempt(req.user_id, module_id, text, correct)
     return result
