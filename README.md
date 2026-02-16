@@ -1,5 +1,9 @@
 # LinguoOS External Interface Layer
 
+- [HANDOFF.md](./HANDOFF.md)
+- [TASKS.md](./TASKS.md)
+
+
 ## 启动
 ```bash
 uvicorn linguoos.main:app --reload
