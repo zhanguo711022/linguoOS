@@ -51,3 +51,14 @@ def events(limit: int | None = Query(None, ge=1, le=500)) -> dict:
         "events": EVENTS.list(limit=limit),
         "meta": EVENTS.snapshot(),
     }
+
+
+@router.get("/events/recent")
+def events_recent(limit: int | None = Query(None, ge=1, le=500)) -> dict:
+    # Alias for compatibility with the v0.3 handoff spec.
+    return events(limit=limit)
+
+
+@router.get("/provider")
+def provider() -> dict:
+    return {"provider": config.PROVIDER}
