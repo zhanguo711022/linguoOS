@@ -2,3 +2,7 @@
 # Python cache
 __pycache__/
 *.pyc
+
+# Runtime data
+linguoos/data/*.db
+linguoos/data/*.jsonl
