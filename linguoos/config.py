@@ -1,12 +1,15 @@
-import os
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
-VERSION = globals().get("VERSION", "0.1.0")
 
-# Provider selection (default: mock). Real providers are placeholders unless explicitly enabled.
-PROVIDER = os.getenv("LINGUO_PROVIDER", "mock")
+class Settings(BaseSettings):
+    provider: str = "mock"
+    db_path: str = "linguoos/data/history.db"
+    require_api_key: bool = False
+    api_key: str = "dev-key-123"
+    version: str = "1.0.0"
+    debug: bool = False
 
-API_KEY = os.getenv("LINGUO_API_KEY", "dev-key-123")
-REQUIRE_API_KEY = os.getenv("LINGUO_REQUIRE_API_KEY", "0") == "1"
+    model_config = SettingsConfigDict(env_prefix="LINGUO_", env_file=".env")
 
-EVENT_BUFFER_SIZE = int(os.getenv("LINGUO_EVENT_BUFFER_SIZE", "200"))
-EVENTS_JSONL_PATH = os.getenv("LINGUO_EVENTS_JSONL_PATH", "linguoos/data/events.jsonl")
+
+settings = Settings()

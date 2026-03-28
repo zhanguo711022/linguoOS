@@ -7,10 +7,6 @@ from collections import deque
 from dataclasses import asdict, dataclass
 from typing import Any
 
-from pathlib import Path
-
-from linguoos import config
-
 
 @dataclass(frozen=True)
 class Event:
@@ -21,10 +17,9 @@ class Event:
 
 
 class EventStore:
-    def __init__(self, max_events: int = 200, jsonl_path: str | None = None) -> None:
+    def __init__(self, max_events: int = 200) -> None:
         self._lock = threading.Lock()
         self._events: deque[Event] = deque(maxlen=max_events)
-        self._jsonl_path = jsonl_path
 
     def record(self, event: str, data: dict[str, Any] | None = None) -> Event:
         payload = data or {}
@@ -36,18 +31,6 @@ class EventStore:
         )
         with self._lock:
             self._events.append(entry)
-            if self._jsonl_path:
-                try:
-                    path = Path(self._jsonl_path)
-                    path.parent.mkdir(parents=True, exist_ok=True)
-                    # Append JSON line; keep it lightweight.
-                    import json
-
-                    with path.open("a", encoding="utf-8") as f:
-                        f.write(json.dumps(asdict(entry), ensure_ascii=False) + "\n")
-                except Exception:
-                    # Best-effort only; never break API on event persistence errors.
-                    pass
         return entry
 
     def list(self, limit: int | None = None) -> list[dict[str, Any]]:
@@ -64,4 +47,4 @@ class EventStore:
         return {"total": total, "max_events": max_events}
 
 
-EVENTS = EventStore(max_events=config.EVENT_BUFFER_SIZE, jsonl_path=config.EVENTS_JSONL_PATH)
+EVENTS = EventStore()

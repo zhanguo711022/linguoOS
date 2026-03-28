@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+<<<<<<< HEAD
+bundle_name="linguoos_backend_bundle.tar.gz"
+tar -czf "$bundle_name" linguoos requirements.txt Dockerfile .env.example README.md
+
+echo "Created $bundle_name"
+=======
 ROOT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 DIST_DIR="$ROOT_DIR/dist"
 
@@ -43,3 +49,4 @@ rm -f "$SCRIPTS_ZIP"
 echo "[package] wrote $SCRIPTS_ZIP"
 
 echo "[package] done"
+>>>>>>> origin/main

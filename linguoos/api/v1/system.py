@@ -1,64 +1,32 @@
-import time
+from fastapi import APIRouter
 
-from fastapi import APIRouter, Query
-from pydantic import BaseModel
-
-from linguoos import config
+from linguoos.config import settings
 from linguoos.system.events import EVENTS
 from linguoos.system.metrics import METRICS
 
-router = APIRouter(prefix="/api/v1/system", tags=["system"])
-STARTED_AT = time.time()
+router = APIRouter(prefix="/system", tags=["system"])
 
 
-class Health(BaseModel):
-    ok: bool
+@router.get("/health")
+async def health():
+    return {"ok": True, "data": {"status": "ok"}}
 
 
-class Version(BaseModel):
-    version: str
-
-
-@router.get("/health", response_model=Health)
-def health() -> Health:
-    return Health(ok=True)
-
-
-@router.get("/version", response_model=Version)
-def version() -> Version:
-    return Version(version=config.VERSION)
+@router.get("/version")
+async def version():
+    return {"ok": True, "data": {"version": settings.version}}
 
 
 @router.get("/status")
-def status() -> dict:
-    uptime_sec = int(time.time() - STARTED_AT)
-    return {
-        "ok": True,
-        "version": config.VERSION,
-        "uptime_sec": uptime_sec,
-        "require_api_key": config.REQUIRE_API_KEY,
-    }
+async def status():
+    return {"ok": True, "data": {"provider": settings.provider, "debug": settings.debug}}
 
 
 @router.get("/metrics")
-def metrics() -> dict:
-    return METRICS.snapshot()
+async def metrics():
+    return {"ok": True, "data": METRICS.snapshot()}
 
 
 @router.get("/events")
-def events(limit: int | None = Query(None, ge=1, le=500)) -> dict:
-    return {
-        "events": EVENTS.list(limit=limit),
-        "meta": EVENTS.snapshot(),
-    }
-
-
-@router.get("/events/recent")
-def events_recent(limit: int | None = Query(None, ge=1, le=500)) -> dict:
-    # Alias for compatibility with the v0.3 handoff spec.
-    return events(limit=limit)
-
-
-@router.get("/provider")
-def provider() -> dict:
-    return {"provider": config.PROVIDER}
+async def events(limit: int | None = None):
+    return {"ok": True, "data": EVENTS.list(limit=limit)}
