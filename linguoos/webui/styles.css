@@ -1,0 +1,70 @@
+:root {
+  --bg: #041b49;
+  --card: #0b2a66;
+  --text: #eef3ff;
+  --muted: #b9c8f0;
+  --accent: #ff9e1b;
+  --accent-2: #35b7ff;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: var(--text);
+  background: linear-gradient(180deg, #021336 0%, var(--bg) 100%);
+}
+.container { max-width: 960px; margin: 0 auto; padding: 20px; display: grid; gap: 14px; }
+.card {
+  background: rgba(11, 42, 102, 0.9);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 14px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+}
+.hero { display: flex; gap: 16px; align-items: center; }
+.hero-copy h1 { margin: 0 0 6px; }
+.hero-copy p { margin: 0; color: var(--muted); }
+.hero-media { width: 180px; position: relative; }
+.logo-video, .logo-image { width: 100%; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); display: block; }
+.logo-image { display: none; }
+.grid { display: grid; gap: 10px; }
+.grid.two { grid-template-columns: repeat(2, minmax(0,1fr)); }
+.grid.three { grid-template-columns: repeat(3, minmax(0,1fr)); }
+label { font-size: 13px; color: var(--muted); display: grid; gap: 6px; }
+input {
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.2);
+  padding: 10px;
+  background: #07225a;
+  color: var(--text);
+}
+.actions { display: flex; gap: 10px; margin-top: 10px; }
+.actions.wrap { flex-wrap: wrap; }
+button {
+  border: 0;
+  border-radius: 10px;
+  padding: 9px 12px;
+  font-weight: 600;
+  cursor: pointer;
+  background: linear-gradient(90deg, var(--accent-2), #1888ff);
+  color: #fff;
+}
+button.secondary { background: #294a88; }
+button.danger { background: #943748; }
+.hint { margin: 10px 0 0; color: var(--muted); font-size: 12px; }
+pre {
+  margin: 0;
+  border-radius: 10px;
+  padding: 12px;
+  background: #03173e;
+  color: #dfe8ff;
+  overflow: auto;
+  max-height: 340px;
+}
+@media (max-width: 760px) {
+  .hero { flex-direction: column; align-items: flex-start; }
+  .hero-media { width: 140px; }
+  .grid.two, .grid.three { grid-template-columns: 1fr; }
+}

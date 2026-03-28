@@ -1,7 +1,8 @@
-from enum import Enum
-from typing import Dict, List, Optional
+from __future__ import annotations
 
-from pydantic import BaseModel, Field
+from enum import Enum
+
+from pydantic import BaseModel
 
 
 class ErrorType(str, Enum):
@@ -13,9 +14,7 @@ class ErrorType(str, Enum):
 
 
 class PrecisionModule(BaseModel):
-    module_id: str = Field(..., description='Example: "precision.generalization"')
-    name: str = Field(..., description="Example: Generalization")
+    module_id: str
+    name: str
     description: str
     error_type: ErrorType
-    prerequisites: List[str] = []
-    mastery_condition: Dict[str, Optional[str]] = {}

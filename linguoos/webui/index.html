@@ -1,4 +1,5 @@
 <!doctype html>
+<<<<<<< HEAD
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -24,4 +25,97 @@
 
     <script type="module" src="app.js"></script>
   </body>
+=======
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LinguoOS UI</title>
+  <link rel="stylesheet" href="/webui/styles.css" />
+</head>
+<body>
+  <main class="container">
+    <section class="hero card">
+      <div class="hero-media">
+        <video id="logoVideo" class="logo-video" autoplay muted loop playsinline poster="/webui/assets/logo-static.jpg">
+          <source src="/webui/assets/logo-animated.mp4" type="video/mp4" />
+        </video>
+        <img id="logoImage" class="logo-image" src="/webui/assets/logo-static.jpg" alt="LinguoOS Logo" />
+      </div>
+      <div class="hero-copy">
+        <h1>LinguoOS</h1>
+        <p>诊断 → 练习 → 反馈 → 讲解 → 再练习</p>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>注册 / 会话</h2>
+      <div class="grid two">
+        <label>用户ID（注册标识）
+          <input id="userId" placeholder="例如：guo-demo" />
+        </label>
+        <label>访客ID（自动生成，可覆盖）
+          <input id="visitorId" placeholder="auto-generated" />
+        </label>
+      </div>
+      <div class="actions">
+        <button id="btnRegister">注册并开始</button>
+        <button id="btnWhoAmI" class="secondary">查看当前会话</button>
+      </div>
+      <p class="hint">说明：当前为最小可用注册流（本地会话 + 后端 profile API 联动），不改变既有 API 契约。</p>
+    </section>
+
+    <section class="card">
+      <h2>档案管理（Profile）</h2>
+      <div class="grid three">
+        <label>语言
+          <input id="language" value="en" />
+        </label>
+        <label>阶段（0-4）
+          <input id="stage" type="number" min="0" max="4" value="2" />
+        </label>
+        <label>模块
+          <input id="moduleId" value="precision.generalization" />
+        </label>
+      </div>
+      <div class="actions">
+        <button id="btnProfileGet">获取档案</button>
+        <button id="btnProfileSave">保存档案</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>训练闭环联调</h2>
+      <div class="actions wrap">
+        <button id="btnCtx">A. Context</button>
+        <button id="btnDecide1">B. Decision(first)</button>
+        <button id="btnGet">C1. Practice·Get</button>
+        <button id="btnSubmitWrong">C2. Submit Wrong</button>
+        <button id="btnDecide2">D. Decision(after wrong)</button>
+        <button id="btnExplain">E. Explain</button>
+        <button id="btnDemoFlow" class="secondary">One-shot Demo</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>系统与历史</h2>
+      <div class="actions wrap">
+        <button id="btnStatus">System Status</button>
+        <button id="btnMetrics">System Metrics</button>
+        <button id="btnEvents">System Events</button>
+        <button id="btnProvider">System Provider</button>
+        <button id="btnHist">History (recent)</button>
+        <button id="btnHistClear" class="danger">History Clear</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>输出</h2>
+      <pre id="out">Ready.</pre>
+    </section>
+  </main>
+
+  <script src="/webui/app.js"></script>
+</body>
+>>>>>>> origin/main
 </html>

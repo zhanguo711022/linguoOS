@@ -1,11 +1,20 @@
-from fastapi import APIRouter, Query
+from __future__ import annotations
 
-from linguoos.agents.explain import ExplainAgent
+from fastapi import APIRouter, Depends, Query
+
+from linguoos.api.deps import get_explain_service
 from linguoos.schemas.explain import Explanation
+from linguoos.services.explain_service import ExplainService
 
-router = APIRouter(prefix="/api/v1/explain", tags=["explain"])
+router = APIRouter(prefix="/explain", tags=["explain"])
 
 
 @router.get("/concept", response_model=Explanation)
-def concept(module_id: str = Query("precision.generalization")) -> Explanation:
-    return ExplainAgent().explain(module_id)
+async def explain_concept(
+    session_id: str = Query(...),
+    concept: str = Query(...),
+    level: str | None = Query(None),
+    service: ExplainService = Depends(get_explain_service),
+):
+    result = await service.explain(session_id=session_id, concept=concept, level=level)
+    return Explanation(**result)

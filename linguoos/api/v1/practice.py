@@ -1,21 +1,32 @@
-from fastapi import APIRouter, Query
+from __future__ import annotations
 
-from linguoos.agents.feedback import FeedbackAgent
-from linguoos.agents.practice import PracticeAgent
-from linguoos.schemas.feedback import FeedbackResponse
-from linguoos.schemas.practice import PracticeItem
-from linguoos.schemas.task import TaskSubmissionRequest
+from fastapi import APIRouter, Depends, HTTPException, Query
 
-router = APIRouter(prefix="/api/v1/practice", tags=["practice"])
+from linguoos.api.deps import get_practice_service
+from linguoos.schemas.practice import FeedbackResponse, PracticeItem, SubmitRequest
+from linguoos.services.practice_service import PracticeService
+
+router = APIRouter(prefix="/practice", tags=["practice"])
 
 
 @router.get("/next", response_model=PracticeItem)
-def next_practice(
-    module_id: str = Query("precision.generalization"),
-) -> PracticeItem:
-    return PracticeAgent().generate_item(module_id)
+async def next_practice(
+    session_id: str = Query(...),
+    module_id: str = Query("grammar"),
+    service: PracticeService = Depends(get_practice_service),
+):
+    item = await service.next_item(session_id=session_id, module_id=module_id)
+    return PracticeItem(**item)
 
 
 @router.post("/submit", response_model=FeedbackResponse)
-def submit(req: TaskSubmissionRequest) -> FeedbackResponse:
-    return FeedbackAgent().evaluate(req)
+async def submit_practice(payload: SubmitRequest, service: PracticeService = Depends(get_practice_service)):
+    if not payload.answer:
+        raise HTTPException(status_code=400, detail="answer required")
+    result = await service.submit(
+        session_id=payload.session_id,
+        prompt=payload.prompt,
+        answer=payload.answer,
+        expected_answer=payload.expected_answer,
+    )
+    return FeedbackResponse(**result)
