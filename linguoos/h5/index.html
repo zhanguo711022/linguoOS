@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#667eea" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <title>LinguoOS - 语言学习</title>
+    <link rel="manifest" href="/app/manifest.json" />
+    <link rel="stylesheet" href="/app/style.css" />
+  </head>
+  <body>
+    <div id="app" class="app-shell">
+      <header class="app-header">
+        <div class="header-left">🌐 LinguoOS</div>
+        <button class="icon-button" id="settingsBtn" aria-label="Settings">⚙️</button>
+      </header>
+      <main id="appMain" class="app-main"></main>
+      <nav class="tabbar" role="tablist">
+        <button class="tab active" data-route="/app" role="tab" aria-selected="true">
+          <span class="tab-emoji">🏠</span>
+          <span class="tab-label">学习</span>
+        </button>
+        <button class="tab" data-route="/app/speak" role="tab" aria-selected="false">
+          <span class="tab-emoji">🎙️</span>
+          <span class="tab-label">口语</span>
+        </button>
+        <button class="tab" data-route="/app/progress" role="tab" aria-selected="false">
+          <span class="tab-emoji">📊</span>
+          <span class="tab-label">进度</span>
+        </button>
+        <button class="tab" data-route="/app/teacher" role="tab" aria-selected="false">
+          <span class="tab-emoji">👨‍🏫</span>
+          <span class="tab-label">老师</span>
+        </button>
+      </nav>
+    </div>
+    <div id="toast" class="toast" aria-live="polite"></div>
+    <script type="module" src="/app/app.js"></script>
+  </body>
+</html>
