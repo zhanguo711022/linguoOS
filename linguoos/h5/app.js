@@ -35,6 +35,7 @@ const actions = {
   celebrate,
   apiFetch,
   getVisitorId,
+  speakText,
   updateChat,
 };
 
@@ -106,6 +107,38 @@ function getVisitorId() {
   const id = crypto.randomUUID ? crypto.randomUUID() : `visitor-${Date.now()}`;
   localStorage.setItem(key, id);
   return id;
+}
+
+let activeAudio = null;
+
+async function speakText(text) {
+  const trimmed = (text || "").trim();
+  if (!trimmed) return;
+  try {
+    const language = localStorage.getItem("linguoos-lang") || "zh";
+    const response = await fetch("/api/v1/voice/tts", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Visitor-Id": getVisitorId(),
+      },
+      body: JSON.stringify({ text: trimmed, language, voice: "nova" }),
+    });
+    if (!response.ok) {
+      throw new Error("Voice request failed");
+    }
+    const blob = await response.blob();
+    if (activeAudio) {
+      activeAudio.pause();
+      URL.revokeObjectURL(activeAudio.src);
+    }
+    const url = URL.createObjectURL(blob);
+    activeAudio = new Audio(url);
+    activeAudio.onended = () => URL.revokeObjectURL(url);
+    await activeAudio.play();
+  } catch (error) {
+    showToast("语音播放失败");
+  }
 }
 
 async function apiFetch(url, options = {}) {
