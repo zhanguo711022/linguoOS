@@ -1,25 +1,18 @@
-from __future__ import annotations
+from typing import Optional
 
-from dataclasses import asdict
+from fastapi import APIRouter, Query
 
-from fastapi import APIRouter, Depends, Query
+from linguoos.storage.sqlite import clear_attempts, recent_attempts
 
-from linguoos.api.deps import get_repo
-from linguoos.storage.sqlite import SQLiteRepository
-
-router = APIRouter(prefix="/history", tags=["history"])
+router = APIRouter(prefix="/api/v1/history", tags=["history"])
 
 
 @router.get("/recent")
-async def recent_history(
-    session_id: str = Query(...),
-    limit: int = Query(20, ge=1, le=100),
-    repo: SQLiteRepository = Depends(get_repo),
-):
-    records = await repo.list_records(session_id=session_id, limit=limit)
-    return {"ok": True, "data": [asdict(item) for item in records]}
+def recent(user_id: Optional[str] = Query(None), limit: int = Query(20, ge=1, le=200)):
+    return {"items": recent_attempts(user_id, limit)}
 
 
 @router.delete("/clear")
-async def clear_history(session_id: str = Query(...)):
-    return {"ok": True, "data": {"session_id": session_id, "cleared": False}}
+def clear(user_id: Optional[str] = Query(None)):
+    clear_attempts(user_id)
+    return {"ok": True}

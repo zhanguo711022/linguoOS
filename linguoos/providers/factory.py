@@ -1,15 +1,26 @@
-from linguoos.config import settings
-from linguoos.providers.anthropic_provider import AnthropicProvider
+from __future__ import annotations
+
+from linguoos import config
 from linguoos.providers.mock import MockProvider
-from linguoos.providers.openai_provider import OpenAIProvider
 
 
 def get_provider():
-    name = settings.provider.lower()
+    """Provider factory.
+
+    Default: mock provider.
+
+    NOTE: Real providers (openai/anthropic) are intentionally not implemented
+    to preserve the 'no outbound network' constraint unless explicitly tasked.
+    """
+
+    name = (config.PROVIDER or "mock").lower()
     if name == "mock":
         return MockProvider()
-    if name == "openai":
-        return OpenAIProvider()
-    if name == "anthropic":
-        return AnthropicProvider()
-    raise ValueError(f"Unknown provider: {settings.provider}")
+
+    # Placeholders for future integrations.
+    if name in {"openai", "anthropic"}:
+        raise NotImplementedError(
+            f"Provider '{name}' is a placeholder. Implement under linguoos/providers/ explicitly when allowed."
+        )
+
+    raise ValueError(f"Unknown provider: {name}")

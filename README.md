@@ -1,5 +1,9 @@
 # LinguoOS External Interface Layer
 
+- [HANDOFF.md](./HANDOFF.md)
+- [TASKS.md](./TASKS.md)
+
+
 ## 启动
 ```bash
 uvicorn linguoos.main:app --reload
@@ -8,6 +12,37 @@ uvicorn linguoos.main:app --reload
 ## 说明
 - 当前仅提供 mock 接口层。
 - 不包含任何教学逻辑。
+
+## Actions · 一键发版
+
+### 触发方式
+
+- 推标签发版：在本地或 GitHub 上创建 tag（例：`v0.3.1`）并 push → 自动生成 Release，附上 `dist/*` 产物。
+
+  本地命令示例：
+
+  ```bash
+  git tag v0.3.1 && git push origin v0.3.1
+  ```
+
+- 手工触发（不创建 Release，仅上传 workflow artifact；如勾选 `push_ghcr=true` 可推镜像）：
+  - GitHub → Actions → Release → Run workflow
+
+### GHCR 镜像（可选）
+
+- 工作流已内置登录 `ghcr.io`，使用 `GITHUB_TOKEN`；仓库需允许 `packages: write`。
+- 镜像名：`ghcr.io/<owner>/<repo>/linguoos:<tag>` 与 `:latest`
+
+### 前置设置（一次性）
+
+- Settings → Actions → General → Workflow permissions 勾选 “Read and write permissions”。
+- 若组织策略禁用 Packages 写入，需管理员开启。
+
+### Release 产物包含
+
+- `*-src.zip`
+- `*-scripts.zip`
+- （以及可选 `*-image.tar`，如 pack 脚本有导出）
 
 ## Frontend Quickstart · 3 Calls
 访问 `/docs` 作为可视化调试入口，下面 3 次调用即可跑通 Context → Decision → Practice 的最小闭环。
@@ -269,3 +304,9 @@ curl -X POST "http://localhost:8000/api/v1/correction/review" \
   "next_action": "continue_practice"
 }
 ```
+
+## History API（SQLite）
+
+- GET `/api/v1/history/recent?user_id=&limit=`
+- DELETE `/api/v1/history/clear?user_id=`
+- 数据文件：`LINGUO_DB_PATH`（默认 `linguoos/data/linguoos.db`）
