@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 
 from fastapi import FastAPI
+from fastapi.responses import FileResponse
 
 from linguoos.api.admin import router as admin_router
 from linguoos.api.deps import get_repo
@@ -31,6 +32,20 @@ def create_app() -> FastAPI:
     app.include_router(admin_router)
 
     install_error_handlers(app)
+
+    h5_root = os.path.join(os.path.dirname(__file__), "h5")
+    h5_index = os.path.join(h5_root, "index.html")
+
+    @app.get("/app")
+    async def h5_app() -> FileResponse:
+        return FileResponse(h5_index)
+
+    @app.get("/app/{path:path}")
+    async def h5_static(path: str) -> FileResponse:
+        file_path = os.path.join(h5_root, path)
+        if os.path.exists(file_path):
+            return FileResponse(file_path)
+        return FileResponse(h5_index)
 
     @app.on_event("startup")
     async def startup() -> None:
