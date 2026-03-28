@@ -1,147 +1,120 @@
-const API_BASE = "/api/v1/curriculum";
+export function render(container) {
+  const scores = {
+    precision: 78,
+    structure: 72,
+    logic: 69,
+    usage: 83,
+    sound: 76,
+  };
 
-const CATEGORY_MAP = {
-  "基础": [
-    "starter.phonics",
-    "starter.greetings",
-    "starter.numbers",
-    "starter.daily",
-  ],
-  "语法": [
-    "elementary.grammar",
-    "elementary.questions",
-    "advanced.complex",
-  ],
-  "表达": [
-    "elementary.dialog",
-    "elementary.routines",
-    "upper.presentation",
-    "ielts.speaking",
-  ],
-  "逻辑": [
-    "intermediate.precision",
-    "intermediate.logic",
-    "upper.argument",
-    "advanced.critical",
-  ],
-  "阅读写作": [
-    "intermediate.reading",
-    "upper.academic",
-    "advanced.synthesis",
-    "ielts.reading",
-    "ielts.writing",
-  ],
-};
+  container.innerHTML = `
+    <section class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div style="font-weight:600;">本周学习热力图</div>
+        <div style="color:var(--text-light);font-size:12px;">7天</div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(7, 1fr);gap:6px;margin-top:12px;">
+        ${[4, 7, 2, 8, 10, 6, 9]
+          .map((value) => {
+            const intensity = Math.min(1, value / 10);
+            return `<div style="height:36px;border-radius:10px;background:rgba(102,126,234,${0.15 + intensity * 0.6});"></div>`;
+          })
+          .join("")}
+      </div>
+    </section>
 
-function getUserId() {
-  return localStorage.getItem("linguoos_user_id") || "guest";
+    <section class="card" style="margin-top:16px;">
+      <div style="font-weight:600;">5维能力雷达</div>
+      <div style="display:flex;justify-content:center;margin-top:12px;">${drawRadar(scores)}</div>
+    </section>
+
+    <section class="card" style="margin-top:16px;display:flex;justify-content:space-between;align-items:center;">
+      <div>
+        <div style="font-weight:600;">连续学习天数</div>
+        <div style="color:var(--text-light);font-size:12px;margin-top:4px;">坚持越久成长越快</div>
+      </div>
+      <div style="font-size:28px;font-weight:700;">🔥 12</div>
+    </section>
+
+    <section class="card" style="margin-top:16px;">
+      <div style="font-weight:600;">最近练习记录</div>
+      <div class="timeline" style="margin-top:12px;">
+        ${["晨间口语对话", "逻辑表达训练", "商务写作精进"]
+          .map(
+            (item, index) => `
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background:${index === 0 ? "#4facfe" : "#667eea"};"></div>
+            <div>
+              <div style="font-weight:600;">${item}</div>
+              <div style="color:var(--text-light);font-size:12px;">${index + 1} 小时前完成</div>
+            </div>
+          </div>
+        `
+          )
+          .join("")}
+      </div>
+    </section>
+
+    <section class="card" style="margin-top:16px;">
+      <div style="font-weight:600;margin-bottom:12px;">成就徽章</div>
+      <div class="badge-row">
+        <div class="badge">🚀 初级表达</div>
+        <div class="badge">🔥 7日连续</div>
+        <div class="badge" style="opacity:0.5;">🔒 语法大师</div>
+      </div>
+    </section>
+  `;
 }
 
-async function apiGet(path) {
-  const response = await fetch(`${API_BASE}${path}`);
-  if (!response.ok) {
-    throw new Error(`Request failed: ${response.status}`);
-  }
-  return response.json();
-}
-
-function buildRadar(values) {
-  const size = 260;
-  const center = size / 2;
+function drawRadar(scores) {
+  const labels = ["precision", "structure", "logic", "usage", "sound"];
+  const values = labels.map((label) => scores[label]);
+  const max = 100;
+  const center = 120;
   const radius = 90;
-  const labels = Object.keys(values);
-  const points = labels.map((label, index) => {
-    const angle = (Math.PI * 2 * index) / labels.length - Math.PI / 2;
-    const ratio = values[label] / 100;
-    const x = center + Math.cos(angle) * radius * ratio;
-    const y = center + Math.sin(angle) * radius * ratio;
-    return `${x},${y}`;
+  const angleStep = (Math.PI * 2) / labels.length;
+
+  const points = values
+    .map((value, i) => {
+      const angle = -Math.PI / 2 + i * angleStep;
+      const r = (value / max) * radius;
+      return `${center + r * Math.cos(angle)},${center + r * Math.sin(angle)}`;
+    })
+    .join(" ");
+
+  const grid = [0.2, 0.4, 0.6, 0.8, 1].map((ratio) => {
+    const gridPoints = labels
+      .map((_, i) => {
+        const angle = -Math.PI / 2 + i * angleStep;
+        const r = ratio * radius;
+        return `${center + r * Math.cos(angle)},${center + r * Math.sin(angle)}`;
+      })
+      .join(" ");
+    return `<polygon points="${gridPoints}" fill="none" stroke="rgba(102,126,234,0.2)" stroke-width="1" />`;
   });
 
-  const axisLines = labels
-    .map((label, index) => {
-      const angle = (Math.PI * 2 * index) / labels.length - Math.PI / 2;
-      const x = center + Math.cos(angle) * radius;
-      const y = center + Math.sin(angle) * radius;
-      return `<line x1="${center}" y1="${center}" x2="${x}" y2="${y}" stroke="#d9d9d9" />`;
-    })
-    .join("");
-
-  const labelTags = labels
-    .map((label, index) => {
-      const angle = (Math.PI * 2 * index) / labels.length - Math.PI / 2;
-      const x = center + Math.cos(angle) * (radius + 28);
-      const y = center + Math.sin(angle) * (radius + 28);
-      return `<text x="${x}" y="${y}" text-anchor="middle" font-size="12" fill="#333">${label}</text>`;
+  const labelNodes = labels
+    .map((label, i) => {
+      const angle = -Math.PI / 2 + i * angleStep;
+      const r = radius + 16;
+      const x = center + r * Math.cos(angle);
+      const y = center + r * Math.sin(angle);
+      const value = scores[label];
+      return `<text x="${x}" y="${y}" text-anchor="middle" font-size="12" fill="#6b7280">${label}<tspan x="${x}" dy="14" fill="#667eea">${value}</tspan></text>`;
     })
     .join("");
 
   return `
-    <svg class="h5-radar" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
-      <circle cx="${center}" cy="${center}" r="${radius}" fill="#f6f8ff" stroke="#d9d9d9" />
-      ${axisLines}
-      <polygon points="${points.join(" ")}" fill="rgba(79,172,254,0.35)" stroke="#4facfe" stroke-width="2" />
-      ${labelTags}
+    <svg width="240" height="240" viewBox="0 0 240 240">
+      <defs>
+        <linearGradient id="radarGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#667eea" />
+          <stop offset="100%" stop-color="#f093fb" />
+        </linearGradient>
+      </defs>
+      ${grid.join("")}
+      <polygon points="${points}" fill="url(#radarGrad)" opacity="0.3" stroke="#667eea" stroke-width="2" />
+      ${labelNodes}
     </svg>
-  `;
-}
-
-function computeRadarData(modules) {
-  const values = {};
-  Object.entries(CATEGORY_MAP).forEach(([label, ids]) => {
-    const scores = ids.map((id) => modules[id]).filter((value) => value !== undefined);
-    if (!scores.length) {
-      values[label] = 0;
-      return;
-    }
-    const sum = scores.reduce((total, value) => total + value, 0);
-    values[label] = Math.round(sum / scores.length);
-  });
-  return values;
-}
-
-export async function initProgress(containerId = "app") {
-  const container = document.getElementById(containerId);
-  if (!container) return;
-  const userId = getUserId();
-  const progress = await apiGet(`/progress/${userId}`);
-  if (!progress.level_id) {
-    container.innerHTML = `
-      <div class="h5-hero">
-        <div class="h5-title">还没有学习记录</div>
-        <div class="h5-subtitle">先去选择你的级别吧</div>
-      </div>
-    `;
-    return;
-  }
-
-  const modules = progress.modules || {};
-  const radarData = computeRadarData(modules);
-
-  const moduleCards = Object.entries(modules)
-    .map(([moduleId, score]) => {
-      return `
-        <div class="h5-module-progress">
-          <div>${moduleId}</div>
-          <div class="h5-progress-bar">
-            <span style="width: ${score}%"></span>
-          </div>
-          <div>${Math.round(score)}%</div>
-        </div>
-      `;
-    })
-    .join("");
-
-  container.innerHTML = `
-    <div class="h5-hero">
-      <div class="h5-title">学习进度</div>
-      <div class="h5-subtitle">${progress.level_id} 级别</div>
-    </div>
-    <div class="h5-radar-wrap">
-      ${buildRadar(radarData)}
-    </div>
-    <div class="h5-module-progress-list">
-      ${moduleCards}
-    </div>
   `;
 }
