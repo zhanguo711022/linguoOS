@@ -25,6 +25,7 @@ export function render(container, { state, actions }) {
     <section class="card" style="margin-top:16px;">
       <div style="font-weight:600;">AI 对话练习</div>
       <div class="chat-area" id="chatArea"></div>
+      <div id="aiExplainArea" style="margin-top:12px;display:none;"></div>
       <div class="chat-input">
         <input id="chatInput" placeholder="输入你的回答或提问" />
         <button class="ghost-button" id="sendBtn">发送</button>
@@ -49,6 +50,7 @@ export function render(container, { state, actions }) {
   });
 
   const chatArea = container.querySelector("#chatArea");
+  const aiExplainArea = container.querySelector("#aiExplainArea");
   const chatInput = container.querySelector("#chatInput");
   const sendBtn = container.querySelector("#sendBtn");
   const recordBtn = container.querySelector("#recordBtn");
@@ -92,7 +94,11 @@ export function render(container, { state, actions }) {
     renderChat();
     setTimeout(() => {
       state.chat.pop();
-      actions.updateChat({ role: "ai", text: "很好！可以试着加一句礼貌的开场，比如：感谢大家今天的时间。" });
+      const lastAiQuestion = [...state.chat].reverse().find((msg) => msg.role === "ai")?.text || "";
+      const correctAnswer = "Thank you all for joining the meeting today. Let's align on the goals and next steps.";
+      const correctionText = `The answer is: ${correctAnswer}`;
+      actions.updateChat({ role: "ai", text: correctionText });
+      handleWrongAnswer(lastAiQuestion, value, correctAnswer);
       renderChat();
     }, 900);
   }
@@ -118,6 +124,92 @@ export function render(container, { state, actions }) {
   });
 
   renderChat();
+
+  async function handleWrongAnswer(question, wrongAnswer, correctAnswer) {
+    aiExplainArea.style.display = "none";
+    aiExplainArea.innerHTML = "";
+    try {
+      const result = await actions.apiFetch("/api/v1/tutor/explain", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          question: question || "Please answer the prompt.",
+          wrong_answer: wrongAnswer,
+          correct_answer: correctAnswer,
+          module_id: "home-chat",
+          language: localStorage.getItem("linguoos-lang") || "zh",
+        }),
+      });
+      renderExplainCard(result);
+      if (actions.speakText && result?.explanation) {
+        actions.speakText(result.explanation);
+      }
+    } catch (error) {
+      actions.showToast("AI 讲解暂不可用");
+    }
+  }
+
+  function renderExplainCard(result = {}) {
+    const explanation = result.explanation || "";
+    const correctPattern = result.correct_pattern || "";
+    const encouragement = result.encouragement || "";
+    const followUpQuestion = result.follow_up_question || "";
+    const followUpOptions = Array.isArray(result.follow_up_options) ? result.follow_up_options : [];
+    const followUpAnswer = result.follow_up_answer || "";
+    const hasFollowUp = followUpQuestion && followUpOptions.length;
+
+    aiExplainArea.style.display = "block";
+    aiExplainArea.innerHTML = `
+      <div class="card" style="box-shadow: none;border:1px solid rgba(102,126,234,0.15);">
+        <div style="font-weight:600;">Lingo 讲解</div>
+        <div style="margin-top:8px;font-size:13px;line-height:1.5;">${explanation}</div>
+        <div style="margin-top:8px;font-size:13px;line-height:1.5;color:var(--text-light);">${correctPattern}</div>
+        <div style="margin-top:8px;font-size:13px;line-height:1.5;">${encouragement}</div>
+        ${
+          hasFollowUp
+            ? `<div style="margin-top:12px;">
+                <div style="font-weight:600;">${followUpQuestion}</div>
+                <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;">
+                  ${followUpOptions
+                    .map(
+                      (option) =>
+                        `<button class="secondary-button" data-follow-option="${option}">${option}</button>`
+                    )
+                    .join("")}
+                </div>
+                <div id="followUpAnswer" style="display:none;margin-top:8px;color:var(--text-light);font-size:12px;">
+                  参考答案：${followUpAnswer}
+                </div>
+              </div>`
+            : ""
+        }
+        <div id="nextBtnWrap" style="margin-top:12px;display:${hasFollowUp ? "none" : "block"};">
+          <button class="primary-button" id="nextBtn">继续</button>
+        </div>
+      </div>
+    `;
+
+    const nextBtn = aiExplainArea.querySelector("#nextBtn");
+    if (nextBtn) {
+      nextBtn.addEventListener("click", () => {
+        actions.showToast("继续下一题");
+      });
+    }
+
+    if (hasFollowUp) {
+      const optionButtons = Array.from(aiExplainArea.querySelectorAll("[data-follow-option]"));
+      const answerNode = aiExplainArea.querySelector("#followUpAnswer");
+      const nextWrap = aiExplainArea.querySelector("#nextBtnWrap");
+      optionButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          optionButtons.forEach((btn) => btn.classList.remove("is-selected"));
+          button.classList.add("is-selected");
+          if (answerNode) answerNode.style.display = "block";
+          if (nextWrap) nextWrap.style.display = "block";
+        });
+      });
+    }
+  }
 }
 
 function renderArc(percentage, color, index) {

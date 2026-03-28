@@ -8,6 +8,7 @@ from fastapi.responses import FileResponse
 from linguoos.api.admin import router as admin_router
 from linguoos.api.deps import get_repo
 from linguoos.api.v1 import router as v1_router
+from linguoos.api.v1.tutor import router as tutor_router
 from linguoos.api.v1.voice import router as voice_router
 from linguoos.config import settings
 from linguoos.middleware import (
@@ -32,6 +33,7 @@ def create_app() -> FastAPI:
     app.include_router(v1_router)
     app.include_router(admin_router)
     app.include_router(voice_router)
+    app.include_router(tutor_router)
 
     install_error_handlers(app)
 
