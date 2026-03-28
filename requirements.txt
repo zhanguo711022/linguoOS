@@ -1,4 +1,8 @@
 fastapi
-pydantic
-starlette
 uvicorn
+pydantic
+pydantic-settings
+sqlalchemy
+aiosqlite
+pytest
+httpx

@@ -1,11 +1,13 @@
-from typing import Protocol, Dict, Any
+from __future__ import annotations
+
+from typing import Any, Protocol
 
 
 class LLMProvider(Protocol):
-    name: str
+    async def chat_tutor(self, message: str, context: dict[str, Any]) -> str: ...
 
-    def explain(self, module_id: str) -> Dict[str, Any]:
-        ...
+    async def generate_practice(self, module_id: str, difficulty: str | None = None) -> dict[str, Any]: ...
 
-    def evaluate_precision(self, text: str) -> Dict[str, Any]:
-        ...
+    async def assess_practice(self, prompt: str, answer: str, context: dict[str, Any]) -> dict[str, Any]: ...
+
+    async def explain_concept(self, concept: str, level: str | None, context: dict[str, Any]) -> dict[str, Any]: ...

@@ -7,8 +7,6 @@ from collections import deque
 from dataclasses import asdict, dataclass
 from typing import Any
 
-from linguoos import config
-
 
 @dataclass(frozen=True)
 class Event:
@@ -49,4 +47,4 @@ class EventStore:
         return {"total": total, "max_events": max_events}
 
 
-EVENTS = EventStore(max_events=config.EVENT_BUFFER_SIZE)
+EVENTS = EventStore()

@@ -1,23 +1,13 @@
-from enum import Enum
+from __future__ import annotations
 
 from pydantic import BaseModel
 
 
-class Action(str, Enum):
-    practice = "practice"
-    feedback = "feedback"
-    explain = "explain"
-    complete = "complete"
-
-
 class DecisionInput(BaseModel):
-    user_id: str
-    module_id: str = "precision.generalization"
-    last_mode: str | None = None
-    last_correct: bool | None = None
+    session_id: str
 
 
 class OrchestratorDecision(BaseModel):
-    action: Action
-    target_module: str
+    action: str
     reason: str
+    confidence: float
