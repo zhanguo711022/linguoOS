@@ -7,6 +7,7 @@ from fastapi import FastAPI
 from linguoos.api.admin import router as admin_router
 from linguoos.api.deps import get_repo
 from linguoos.api.v1 import router as v1_router
+from linguoos.api.v1.voice import router as voice_router
 from linguoos.config import settings
 from linguoos.middleware import (
     ApiKeyMiddleware,
@@ -29,6 +30,7 @@ def create_app() -> FastAPI:
 
     app.include_router(v1_router)
     app.include_router(admin_router)
+    app.include_router(voice_router)
 
     install_error_handlers(app)
 
