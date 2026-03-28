@@ -25,6 +25,19 @@ def init_db() -> None:
             )
             """
         )
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS curriculum_progress(
+              user_id TEXT,
+              level_id TEXT,
+              module_id TEXT,
+              completed INTEGER,
+              score REAL,
+              updated_ts INTEGER,
+              PRIMARY KEY (user_id, module_id)
+            )
+            """
+        )
         conn.commit()
 
 
@@ -69,3 +82,36 @@ def clear_attempts(user_id: str | None) -> None:
         else:
             conn.execute("DELETE FROM attempts")
         conn.commit()
+
+
+def save_progress(user_id: str, level_id: str, module_id: str, completed: bool, score: float) -> None:
+    init_db()
+    with sqlite3.connect(DB_PATH) as conn:
+        conn.execute(
+            """
+            INSERT OR REPLACE INTO curriculum_progress(
+              user_id, level_id, module_id, completed, score, updated_ts
+            ) VALUES (?, ?, ?, ?, ?, ?)
+            """,
+            (user_id, level_id, module_id, 1 if completed else 0, score, int(time.time())),
+        )
+        conn.commit()
+
+
+def get_progress(user_id: str) -> dict:
+    init_db()
+    with sqlite3.connect(DB_PATH) as conn:
+        rows = conn.execute(
+            """
+            SELECT level_id, module_id, completed, score, updated_ts
+            FROM curriculum_progress
+            WHERE user_id=?
+            """,
+            (user_id,),
+        ).fetchall()
+    if not rows:
+        return {\"level_id\": \"\", \"modules\": {}}
+    latest = max(rows, key=lambda row: row[4])
+    level_id = latest[0] or \"\"
+    modules = {row[1]: float(row[3] or 0.0) for row in rows if row[1]}
+    return {\"level_id\": level_id, \"modules\": modules}
