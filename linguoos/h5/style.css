@@ -529,3 +529,82 @@ button:active {
     background: rgba(23, 25, 37, 0.9);
   }
 }
+
+/* ===== AI Teacher Avatar ===== */
+.ai-teacher {
+  position: fixed;
+  bottom: 70px;
+  right: 12px;
+  z-index: 999;
+  text-align: center;
+}
+
+.avatar-wrap {
+  width: 120px;
+  height: 120px;
+  position: relative;
+  cursor: pointer;
+}
+
+.avatar-img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: none;
+  background-color: transparent;
+  object-fit: cover;
+}
+
+.teacher-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-light, #888);
+  letter-spacing: 0.5px;
+}
+
+/* ripple 圆圈 */
+.ripple {
+  position: absolute;
+  top: 0; left: 0;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 2px solid #C9A030;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* speaking 时才触发波纹 */
+.avatar-wrap.speaking .ripple {
+  position: absolute;
+  top: 0; left: 0;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 2px solid #C9A030;
+  opacity: 0;
+  pointer-events: none;
+}
+.avatar-wrap.speaking .r1 { animation-delay: 0s; }
+.avatar-wrap.speaking .r2 { animation-delay: 0.6s; }
+.avatar-wrap.speaking .r3 { animation-delay: 1.2s; }
+
+/* speaking 时头像金色发光 */
+.avatar-wrap.speaking .avatar-img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: none;
+  background-color: transparent;
+  object-fit: cover;
+}
+
+@keyframes ripple-expand {
+  0%   { transform: translate(-50%, -50%) scale(1);   opacity: 0.6; }
+  100% { transform: translate(-50%, -50%) scale(2.2); opacity: 0; }
+}
+
+@keyframes avatar-pulse {
+  from { box-shadow: 0 0 0 4px rgba(240, 180, 41, 0.3); }
+  to   { box-shadow: 0 0 0 10px rgba(102, 126, 234, 0.2); }
+}

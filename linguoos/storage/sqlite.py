@@ -110,8 +110,31 @@ def get_progress(user_id: str) -> dict:
             (user_id,),
         ).fetchall()
     if not rows:
-        return {\"level_id\": \"\", \"modules\": {}}
+        return {"level_id": "", "modules": {}}
     latest = max(rows, key=lambda row: row[4])
-    level_id = latest[0] or \"\"
+    level_id = latest[0] or ""
     modules = {row[1]: float(row[3] or 0.0) for row in rows if row[1]}
-    return {\"level_id\": level_id, \"modules\": modules}
+    return {"level_id": level_id, "modules": modules}
+
+
+class SQLiteRepository:
+    """Compatibility shim for services that expect SQLiteRepository"""
+
+    async def init(self) -> None:
+        init_db()
+
+    async def save(self, table: str, data: dict) -> str:
+        import time as _time
+        save_attempt(
+            data.get("user_id", "guest"),
+            data.get("module_id", ""),
+            str(data.get("payload", "")),
+            bool(data.get("correct", False)),
+        )
+        return str(int(_time.time()))
+
+    async def find(self, table: str, filters: dict = {}, limit: int = 20) -> list:
+        return recent_attempts(filters.get("user_id"), limit)
+
+    async def clear(self, table: str, filters: dict = {}) -> None:
+        clear_attempts(filters.get("user_id"))
