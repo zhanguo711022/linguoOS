@@ -112,6 +112,8 @@ function getVisitorId() {
 let activeAudio = null;
 
 async function speakText(text) {
+  const avatar = document.getElementById('aiAvatar');
+  if (avatar) avatar.classList.add('speaking');
   const trimmed = (text || "").trim();
   if (!trimmed) return;
   try {
@@ -131,11 +133,30 @@ async function speakText(text) {
     if (activeAudio) {
       activeAudio.pause();
       URL.revokeObjectURL(activeAudio.src);
+      activeAudio = null;
     }
     const url = URL.createObjectURL(blob);
     activeAudio = new Audio(url);
-    activeAudio.onended = () => URL.revokeObjectURL(url);
-    await activeAudio.play();
+    // 数智人动画：播放时加 speaking class
+    const avatar = document.getElementById("aiAvatar");
+    if (avatar) avatar.classList.add("speaking");
+    // 返回 Promise，播完才 resolve，彻底解决叠音
+    return new Promise((resolve) => {
+      activeAudio.onended = () => {
+        URL.revokeObjectURL(url);
+        activeAudio = null;
+        if (avatar) avatar.classList.remove("speaking");
+        resolve();
+      };
+      activeAudio.onerror = () => {
+        if (avatar) avatar.classList.remove("speaking");
+        resolve();
+      };
+      activeAudio.play().catch(() => {
+        if (avatar) avatar.classList.remove("speaking");
+        resolve();
+      });
+    });
   } catch (error) {
     showToast("语音播放失败");
   }
