@@ -27,6 +27,17 @@ def init_db() -> None:
         )
         conn.execute(
             """
+            CREATE TABLE IF NOT EXISTS users(
+              id INTEGER PRIMARY KEY AUTOINCREMENT,
+              email TEXT UNIQUE,
+              password_hash TEXT,
+              created_ts INTEGER,
+              last_login_ts INTEGER
+            )
+            """
+        )
+        conn.execute(
+            """
             CREATE TABLE IF NOT EXISTS curriculum_progress(
               user_id TEXT,
               level_id TEXT,
@@ -115,6 +126,53 @@ def get_progress(user_id: str) -> dict:
     level_id = latest[0] or ""
     modules = {row[1]: float(row[3] or 0.0) for row in rows if row[1]}
     return {"level_id": level_id, "modules": modules}
+
+
+def create_user(email: str, password_hash: str) -> int:
+    init_db()
+    created_ts = int(time.time())
+    with sqlite3.connect(DB_PATH) as conn:
+        cursor = conn.execute(
+            """
+            INSERT INTO users(email, password_hash, created_ts, last_login_ts)
+            VALUES(?, ?, ?, ?)
+            """,
+            (email, password_hash, created_ts, None),
+        )
+        conn.commit()
+        return int(cursor.lastrowid)
+
+
+def get_user_by_email(email: str) -> dict | None:
+    init_db()
+    with sqlite3.connect(DB_PATH) as conn:
+        row = conn.execute(
+            """
+            SELECT id, email, password_hash, created_ts, last_login_ts
+            FROM users
+            WHERE email=?
+            """,
+            (email,),
+        ).fetchone()
+    if not row:
+        return None
+    return {
+        "id": row[0],
+        "email": row[1],
+        "password_hash": row[2],
+        "created_ts": row[3],
+        "last_login_ts": row[4],
+    }
+
+
+def update_user_last_login(user_id: int) -> None:
+    init_db()
+    with sqlite3.connect(DB_PATH) as conn:
+        conn.execute(
+            "UPDATE users SET last_login_ts=? WHERE id=?",
+            (int(time.time()), user_id),
+        )
+        conn.commit()
 
 
 class SQLiteRepository:
