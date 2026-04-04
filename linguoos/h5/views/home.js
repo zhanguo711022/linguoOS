@@ -2,13 +2,34 @@
 
 let _state = {};  // 当前学习状态
 
+const LANGUAGES = [
+  { id: "en", label: "英语", flag: "🇬🇧", desc: "English" },
+  { id: "fr", label: "法语", flag: "🇫🇷", desc: "Français" },
+  { id: "ja", label: "日语", flag: "🇯🇵", desc: "日本語" },
+  { id: "ko", label: "韩语", flag: "🇰🇷", desc: "한국어" },
+  { id: "es", label: "西班牙语", flag: "🇪🇸", desc: "Español" },
+  { id: "ru", label: "俄语", flag: "🇷🇺", desc: "Русский" },
+];
+
+const LEVELS = [
+  {id:"starter",    label:"零基础",    desc:"从字母开始",  emoji:"🌱"},
+  {id:"elementary", label:"初级",      desc:"日常对话",    emoji:"📗"},
+  {id:"intermediate",label:"中级",     desc:"精准表达",    emoji:"📘"},
+  {id:"upper",      label:"中高级",    desc:"学术写作",    emoji:"📙"},
+  {id:"advanced",   label:"高级",      desc:"修辞辩论",    emoji:"🏆"},
+  {id:"ielts",      label:"雅思/考试", desc:"备考强化",    emoji:"🎓"},
+];
+
 export function render(container, { state, actions }) {
   _state = state;
 
   // 判断用户状态
+  const savedLang = localStorage.getItem("linguoos-lang");
   const savedLevel = localStorage.getItem("linguoos-level");
-  if (!savedLevel) {
+  if (!savedLang) {
     renderOnboarding(container, actions);
+  } else if (!savedLevel) {
+    renderLevelOnboarding(container, actions, savedLang);
   } else {
     const savedModule = localStorage.getItem("linguoos-module");
     if (!savedModule) {
@@ -26,6 +47,7 @@ async function renderOnboarding(container, actions) {
   container.innerHTML = `
     <div style="min-height:80vh;display:flex;flex-direction:column;justify-content:flex-end;padding:24px 16px 40px;">
       <div id="bubbleArea" style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;gap:12px;"></div>
+      <div id="languageCardArea" style="display:none;margin-top:20px;"></div>
       <div id="levelCardArea" style="display:none;margin-top:20px;"></div>
     </div>`;
 
@@ -52,21 +74,76 @@ async function renderOnboarding(container, actions) {
 
   await addBubble("学语言最好的方式：先听、再说、然后读写 🎧", true, 1800);
   await addBubble("我会用这个顺序带你学，每天只需要 10 分钟 ⏱️", true, 2400);
-  await addBubble("先告诉我，你现在的英语水平怎么样？", true, 3200);
+  await addBubble("先告诉我，你想学哪种语言？", true, 3200);
+
+  const languageCardArea = container.querySelector("#languageCardArea");
+  languageCardArea.style.display = "block";
+  languageCardArea.innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      ${LANGUAGES.map(l => `
+        <button onclick="window._selectLang('${l.id}')"
+          style="background:white;border:2px solid #eee;border-radius:14px;padding:14px 10px;
+          cursor:pointer;text-align:center;transition:all 0.2s;">
+          <div style="font-size:22px">${l.flag}</div>
+          <div style="font-weight:700;font-size:14px;margin-top:4px">${l.label}</div>
+          <div style="color:#888;font-size:11px">${l.desc}</div>
+        </button>
+      `).join("")}
+    </div>`;
 
   // 显示级别选择
   const levelCardArea = container.querySelector("#levelCardArea");
-  levelCardArea.style.display = "block";
+  renderLevelCards(levelCardArea, addBubble, actions, container);
+
+  window._selectLang = async (langId) => {
+    const lang = LANGUAGES.find(item => item.id === langId);
+    localStorage.setItem("linguoos-lang", langId);
+    languageCardArea.style.display = "none";
+    await addBubble(`太棒了！我们来学${lang?.label || "这门语言"}～`, true, 200);
+    await addBubble("先告诉我，你现在的水平怎么样？", true, 500);
+    levelCardArea.style.display = "block";
+  };
+}
+
+async function renderLevelOnboarding(container, actions, langId) {
+  container.innerHTML = `
+    <div style="min-height:80vh;display:flex;flex-direction:column;justify-content:flex-end;padding:24px 16px 40px;">
+      <div id="bubbleArea" style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;gap:12px;"></div>
+      <div id="levelCardArea" style="margin-top:20px;"></div>
+    </div>`;
+
+  const bubbleArea = container.querySelector("#bubbleArea");
+  const levelCardArea = container.querySelector("#levelCardArea");
+
+  async function addBubble(text, isAI = true, delay = 0) {
+    await new Promise(r => setTimeout(r, delay));
+    const div = document.createElement("div");
+    div.style.cssText = `
+      max-width:85%;align-self:${isAI ? "flex-start" : "flex-end"};
+      background:${isAI ? "linear-gradient(135deg,#667eea,#764ba2)" : "#f0f0f5"};
+      color:${isAI ? "white" : "#333"};
+      padding:12px 16px;border-radius:${isAI ? "4px 16px 16px 16px" : "16px 16px 4px 16px"};
+      font-size:14px;line-height:1.6;animation:fadeIn 0.3s ease;
+    `;
+    div.textContent = text;
+    bubbleArea.appendChild(div);
+    bubbleArea.scrollTop = bubbleArea.scrollHeight;
+  }
+
+  const langLabel = getLanguageLabel(langId);
+  await addBubble(`你选择了${langLabel}，现在选你的级别吧～`, true, 300);
+  renderLevelCards(levelCardArea, addBubble, actions, container);
+}
+
+function getLanguageLabel(langId) {
+  const lang = LANGUAGES.find(item => item.id === langId);
+  return lang ? lang.label : "这门语言";
+}
+
+function renderLevelCards(levelCardArea, addBubble, actions, container) {
   levelCardArea.innerHTML = `
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-      ${[
-        {id:"starter",    label:"零基础",    desc:"从字母开始",  emoji:"🌱"},
-        {id:"elementary", label:"初级",      desc:"日常对话",    emoji:"📗"},
-        {id:"intermediate",label:"中级",     desc:"精准表达",    emoji:"📘"},
-        {id:"upper",      label:"中高级",    desc:"学术写作",    emoji:"📙"},
-        {id:"advanced",   label:"高级",      desc:"修辞辩论",    emoji:"🏆"},
-        {id:"ielts",      label:"雅思/考试", desc:"备考强化",    emoji:"🎓"},
-      ].map(l => `
+      ${LEVELS.map(l => `
         <button onclick="window._selectLevel('${l.id}')"
           style="background:white;border:2px solid #eee;border-radius:14px;padding:14px 10px;
           cursor:pointer;text-align:center;transition:all 0.2s;">
@@ -78,8 +155,9 @@ async function renderOnboarding(container, actions) {
     </div>`;
 
   window._selectLevel = async (levelId) => {
+    const level = LEVELS.find(item => item.id === levelId);
     localStorage.setItem("linguoos-level", levelId);
-    await addBubble(`太好了！我为你准备 ${levelId} 级的课程 🎯`, true, 0);
+    await addBubble(`太好了！我为你准备 ${level?.label || levelId} 级的课程 🎯`, true, 0);
     actions.speakText("Perfect! Let me pick your first lesson.");
     setTimeout(() => renderLevelSelect(container, actions, levelId), 1200);
   };
@@ -92,7 +170,8 @@ async function renderLevelSelect(container, actions, levelId) {
   container.innerHTML = `<div style="padding:16px"><div class="skeleton" style="height:40px;margin-bottom:16px;"></div><div class="skeleton" style="height:200px;"></div></div>`;
 
   try {
-    const resp = await fetch(`/api/v1/curriculum/modules/${levelId}`, {
+    const lang = localStorage.getItem("linguoos-lang") || "en";
+    const resp = await fetch(`/api/v1/curriculum/modules/${levelId}?lang=${encodeURIComponent(lang)}`, {
       headers: {"X-Visitor-Id": getVisitorId()}
     });
     const data = await resp.json();
@@ -138,11 +217,12 @@ async function renderLevelSelect(container, actions, levelId) {
           </div>
         </div>
 
-        <!-- 模块列表 -->
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-          <div style="font-weight:700;font-size:16px;">选择模块开始练习</div>
+        <!-- 顶部导航 -->
+        <div style="display:flex;align-items:center;margin-bottom:16px;">
           <button onclick="localStorage.removeItem('linguoos-level');location.reload()"
-            style="background:none;border:none;color:#888;font-size:12px;cursor:pointer;">切换级别</button>
+            style="background:rgba(102,126,234,0.1);border:none;border-radius:99px;padding:8px 16px;font-size:13px;color:#667eea;cursor:pointer;font-weight:600;">← 返回</button>
+          <div style="flex:1;text-align:center;font-weight:700;font-size:16px;">选择模块</div>
+          <div style="width:64px;"></div>
         </div>
 
         <div id="moduleList" style="display:flex;flex-direction:column;gap:10px;"></div>
